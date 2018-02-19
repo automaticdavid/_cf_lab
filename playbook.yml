@@ -151,7 +151,6 @@
 - hosts: cfui 
   vars:
     ansible_ssh_pass: "{{ cfme_new_root_pw }}"
-  tags: new
 
   tasks:
     - name: Clean up yum cache
@@ -196,11 +195,11 @@
         - name: config cf admin
           uri:
             url: https://cfui-f600.rhpds.opentlc.com/api/users/
-            method: POST
+            method: POST 
             user: admin
-            password: vault_cfme_default_root_pw
+            password: "{{ vault_cfme_default_root_pw }}"
             body: '{ "action" : "edit", "resources" :  [{"href" : "https://cfui-f600.rhpds.opentlc.com/api/users/1000000000001","password" : "redhat"}] }'
-            # force_basic_auth: yes
+            force_basic_auth: yes
             body_format: json
             validate_certs: no
       tags: new
