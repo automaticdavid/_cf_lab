@@ -1,0 +1,14 @@
+cfme_default_root_pw: "{{ vault_cfme_default_root_pw }}"
+cfme_new_root_pw: "{{ vault_cfme_new_root_pw }}"
+
+rhn_user: "{{ vault_rhn_user }}"
+rhn_pass: "{{ vault_rhn_pass }}"
+
+cfme_db_user: "{{ vault_cfme_db_user }}"
+cfme_db_pass: "{{ vault_cfme_db_pass }}"
+
+ipa_principal: "{{ vault_ipa_principal }}"
+ipa_password: "{{ vault_ipa_password }}"
+ipa_server: idm.example.com
+ipa_realm: EXAMPLE.COM
+ipa_domain: example.com

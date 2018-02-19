@@ -5,6 +5,8 @@
 # this play performs initial sysadmin for newly created CFME appliances
 # we set a non-default root password, install a public key for ansible,
 # subscribe to the Red Hat customer portal, and update packages.
+
+
 - hosts: all
   vars:
     ansible_ssh_pass: "{{ cfme_default_root_pw }}"
@@ -84,8 +86,6 @@
 
 
 
-
-
 # these plays are designed for hosts that join the database remotely
 # we don't need to join an external region, or fetch a remote encryption
 # key, if we're building an 'all-in-one' appliance. 
@@ -103,7 +103,7 @@
           appliance_console_cli
           --fetch-key={{ primary_ip }}
           --sshlogin=root
-          --sshpassword="{{ cfme_default_root_pw }}"
+          --sshpassword="{{ cfme_new_root_pw }}"
 
       - name: connect to external region in database
         shell: >
@@ -115,9 +115,96 @@
         args:
           chdir: /var/www/miq/vmdb
           creates: REGION
-      when: not cfme_appliance_allinone is defined
+
+      - name: Copy VDDK
+        copy:
+          src: files/VMware-vix-disklib-5.5.0-1284542.x86_64.tar.gz 
+          dest: /tmp/vddk.tar.gz
+
+      - name: Unpack VDDK
+        unarchive:
+          src: /tmp/vddk.tar.gz
+          dest: /tmp/
+          remote_src: yes
+
+      - name: Check VDDK install  
+        stat:
+          path: /usr/bin/vmwar-uninstall-vix-disklib.pl
+        register: vix_file
+
+      - name: Remove VDDK 
+        shell: /tmp/vmware-vix-disklib-distrib/bin64/vmware-uninstall-vix-disklib.pl
+        ignore_errors: yes
+        when: vix_file.stat.exists 
+      
+      - name: Install VDDK
+        shell: /tmp/vmware-vix-disklib-distrib/vmware-install.pl EULA_AGREED=yes --default
+
+      - name: start evmserverd
+        service:
+          name: evmserverd
+          state: started
+
+
+
+# Configure UI
+- hosts: cfui 
+  vars:
+    ansible_ssh_pass: "{{ cfme_new_root_pw }}"
+  tags: new
+
+  tasks:
+    - name: Clean up yum cache
+      file:
+        path: /var/cache/yum
+        state: absent
+
+    - name: Check IPA config
+      stat: 
+        path: /etc/ipa/default.conf 
+      register: ipa_config_file
+
+#    - debug:
+#        msg: "{{ ipa_config_file }}"
+
+    - name: configure UI appliance for IPA 
+      shell: >
+        appliance_console_cli
+        --ipaserver={{ ipa_server}}
+        --ipaprincipal={{ ipa_principal }}
+        --ipapassword={{ ipa_password }}
+        --ipadomain={{ ipa_domain }}
+        --iparealm={{ ipa_realm }}
+      when: 
+        - ipa_config_file.stat.exists == False
 
     - name: start evmserverd
       service:
         name: evmserverd
         state: started
+
+# run REST
+
+- hosts: localhost
+  tasks:
+    - name: REST RUN
+      block:
+        - debug:
+            msg: "{{ vault_cfme_default_root_pw }}"
+
+
+        - name: config cf admin
+          uri:
+            url: https://cfui-f600.rhpds.opentlc.com/api/users/
+            method: POST
+            user: admin
+            password: vault_cfme_default_root_pw
+            body: '{ "action" : "edit", "resources" :  [{"href" : "https://cfui-f600.rhpds.opentlc.com/api/users/1000000000001","password" : "redhat"}] }'
+            # force_basic_auth: yes
+            body_format: json
+            validate_certs: no
+      tags: new
+
+
+
+

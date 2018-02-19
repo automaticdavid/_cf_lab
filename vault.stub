@@ -1,0 +1,8 @@
+vault_cfme_default_root_pw: 
+vault_cfme_new_root_pw: 
+vault_rhn_user: 
+vault_rhn_pass: 
+vault_cfme_db_user: 
+vault_cfme_db_pass: 
+vault_ipa_principal: 
+vault_ipa_password: 

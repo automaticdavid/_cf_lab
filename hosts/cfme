@@ -1,11 +1,19 @@
 [primary_db]
-cfme-db1.vm.home.ajg.id.au	cfme_db_disk=/dev/vdb
+cf.example.com	cfme_db_disk=/dev/vdb
 
 [appliances]
-cfme-ap1.vm.home.ajg.id.au	join_external_region=1
+cfui.example.com	join_external_region=1
+cfwork1.example.com	join_external_region=1
+cfwork2.example.com	join_external_region=1
+cfwork3.example.com	join_external_region=1
+cfwork4.example.com	join_external_region=1
+cfwork5.example.com	join_external_region=1
+
+[cfui]
+cfui.example.com
 
 [all:vars]
-cfme_primary_db_ip	=	192.168.122.10
+cfme_primary_db_ip	=	192.168.0.100
 cfme_region		=	1
 
 [cfme:children]
