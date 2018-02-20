@@ -15,6 +15,8 @@ yum install git
          
 git clone https://github.com/adamgoossens/cf-ansible.git cloudforms
  
-ansible
+# ansible
 
 # register cloudforms appliance
+
+# Do CF zones 

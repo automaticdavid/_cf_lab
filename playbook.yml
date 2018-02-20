@@ -189,19 +189,37 @@
     - name: REST RUN
       block:
         - debug:
-            msg: "{{ vault_cfme_default_root_pw }}"
+            # msg: "{{ vault_cfme_default_root_pw }}"
+            # msg: "{{ lookup('template', './files/rest_change-admin-password.json.j2', convert_data=False) }}"
+
+        - name: Test auth for non default password
+          uri:
+            url: "{{ cfui_uri }}/api/users/"
+            method: GET 
+            user: admin
+            password: "{{ vault_cfme_new_root_pw }}"
+            force_basic_auth: yes
+            body_format: json
+            validate_certs: no
+          register: rest_result
+          ignore_errors: yes
+
+        - debug:
+            msg: "{{ rest_result }}"
 
 
         - name: config cf admin
           uri:
-            url: https://cfui-f600.rhpds.opentlc.com/api/users/
+            url: "{{ cfui_uri }}/api/users/"
             method: POST 
             user: admin
             password: "{{ vault_cfme_default_root_pw }}"
-            body: '{ "action" : "edit", "resources" :  [{"href" : "https://cfui-f600.rhpds.opentlc.com/api/users/1000000000001","password" : "redhat"}] }'
+            body: "{{ lookup('template', './files/rest_change-admin-password.json.j2', convert_data=False) }} "
             force_basic_auth: yes
             body_format: json
             validate_certs: no
+          when: rest_result.status != 200
+
       tags: new
 
 
