@@ -1,0 +1,24 @@
+
+- hosts: all
+
+  vars:
+    ansible_ssh_pass: "{{ cfme_new_root_pw }}"
+
+  pre_tasks:
+    - name: stop service
+      service:
+        name: evmserverd
+        state: stopped
+
+  roles:
+    - role: samdoran.redhat-subscription
+
+  tasks:
+
+    - name: stop service
+      service:
+        name: evmserverd
+        state: stopped
+ 
+  
+
