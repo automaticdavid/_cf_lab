@@ -11,14 +11,65 @@
         state: stopped
 
   roles:
-    - role: samdoran.redhat-subscription
+    - role: openstack.redhat-subscription 
 
   tasks:
 
-    - name: stop service
-      service:
-        name: evmserverd
-        state: stopped
+    - name: umount /repo
+      mount:
+        path: /repo
+        state: absent
+
+    - name: remove /repo
+      lvol:
+        vg: VG-CFME
+        lv: lv_repo
+        state: absent
+        force: yes
+
+    - name: extend lv for /var 
+      lvol:
+        vg: VG-CFME
+        lv: lv_var
+        size: 4G
+
+    - name: extend /var
+      command: xfs_growfs /var
+
+    - name: recreate lv for /repo
+      lvol:
+        vg: VG-CFME
+        lv: lv_repo
+        size: +100%FREE
+        opts: 
+
+    - name: recreate fs repo
+      filesystem:
+        fstype: xfs
+        dev: /dev/VG-CFME/lv_repo
+
+    - name: mount /repo
+      mount:
+        path: /repo
+        src: /dev/VG-CFME/lv_repo
+        fstype: xfs
+        state: mounted 
+
+#    - name: yum update 
+#      yum:
+#        name: "{{ item }}"
+#        state: latest 
+#      with_items:
+#        - cfme
+#        - cfme-appliance
+#        - cfme-gemset   
+#      tags: new
+
+    - name: yum update  
+      yum:    
+        name:  '*'
+        state: latest  
+      tags: new
  
   
 

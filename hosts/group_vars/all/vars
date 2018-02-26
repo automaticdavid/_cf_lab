@@ -4,17 +4,17 @@ cfme_new_root_pw: "{{ vault_cfme_new_root_pw }}"
 rhn_user: "{{ vault_rhn_user }}"
 rhn_pass: "{{ vault_rhn_pass }}"
 
-rhn_username: "{{ vault_rhn_user }}"
-rhn_password: "{{ vault_rhn_pass }}"
-rhsub_state: present                     
-rhsub_autosubscribe: True
-rhsub_repos:
+rhsm_username: "{{ vault_rhn_user }}"
+rhsm_password: "{{ vault_rhn_pass }}"
+rhsm_repos:
   - name: cf-me-5.8-for-rhel-7-rpms    
     state: absent                     
   - name: rhel-7-server-rpms 
     state: present
-  - name: cf-me-5.9-for-rhel-7-rpms 
-    state: present  
+  - name: cf-me-for-rhel-7-beta-rpms 
+    state: present
+  - name: cf-me-5.9-for-rhel-7-rpms
+    state: absent 
   - name: rhel-7-server-optional-rpms
     state: present  
   - name: rhel-7-server-supplementary-rpms
