@@ -33,4 +33,4 @@ ipa_server: idm.example.com
 ipa_realm: EXAMPLE.COM
 ipa_domain: example.com
 
-cfui_uri: https://cfui-f600.rhpds.opentlc.com/
+cfui_uri: https://cfui-dc68.rhpds.opentlc.com/

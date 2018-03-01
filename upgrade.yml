@@ -2,7 +2,7 @@
 - hosts: all
 
   vars:
-    ansible_ssh_pass: "{{ cfme_new_root_pw }}"
+    ansible_ssh_pass: "{{ cfme_default_root_pw }}"
 
   pre_tasks:
     - name: stop service
