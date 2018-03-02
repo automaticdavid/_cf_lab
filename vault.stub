@@ -6,3 +6,4 @@ vault_cfme_db_user:
 vault_cfme_db_pass: 
 vault_ipa_principal: 
 vault_ipa_password: 
+vault_ose_default_cfuser_pw:

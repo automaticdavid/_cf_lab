@@ -195,11 +195,9 @@
 
 
 
-# run REST
-
 - hosts: localhost
   tasks:
-    - name: REST RUN
+    - name:  REST call to change cfme default password for admin
       block:
         - debug:
             # msg: "{{ vault_cfme_default_root_pw }}"

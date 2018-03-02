@@ -1,3 +1,5 @@
 vault.yml
 *.gz
+*.retry
+*.swp
 

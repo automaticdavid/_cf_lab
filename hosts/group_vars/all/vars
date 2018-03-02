@@ -53,4 +53,4 @@ cf_servers_roles:
   cfwork4: automate,ems_metrics_coordinator,ems_metrics_collector,ems_metrics_processor,event,ems_inventory,ems_operations,smartproxy,smartstate
   cfwork5: automate,ems_metrics_coordinator,ems_metrics_collector,ems_metrics_processor,event,ems_inventory,ems_operations,smartproxy,smartstate
 
-
+ose_uri: https://ose.example.com:8443/

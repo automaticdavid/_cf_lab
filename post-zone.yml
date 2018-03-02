@@ -30,7 +30,7 @@
 
     - name: Set cf ap roles
       block:
-      
+
       - name : rails runner
         shell: >
           rails r 'puts MiqServer.my_server.set_config(:server => {:role => "
@@ -47,30 +47,90 @@
           name: evmserverd
           state: restarted
 
-      - name: Create Openshift  provider in ManageIQ 
-        manageiq_provider:
-          name: 'Openshift_Provider'
-          type: 'OpenShift'
-          provider:
-            auth_key: 'topSecret'
-            hostname: 'ose.example.com'
-            port: 8443
-            verify_ssl: False
-          metrics:
-            role: 'hawkular'
-            hostname: 'example.com'
-            port: 443
-            verify_ssl: False
-          manageiq_connection:
-            url: 'http://127.0.0.1:3000'
-            username: 'admin'
-            password: 'smartvm'
-            verify_ssl: False
 
- 
+- hosts: localhost
+  vars:
+    ansible_ssh_pass: "{{ cfme_new_root_pw }}"
 
+  tasks:
+
+
+
+    - name: get oc auth
+      uri:
+        url: "{{ ose_uri }}/oauth/authorize?response_type=token&client_id=openshift-challenging-client"
+        method: GET
+        user: cfuser
+        password: "{{ vault_ose_default_cfuser_pw }}"
+        force_basic_auth: yes
+        validate_certs: no
+        body: yes
+        body_format: json
+        return_content: yes
+        follow_redirects: all
+
+      register: rest_bearer
+
+    - name: set fact for oc tokenid
+      vars:
+        fragment: "{{ rest_bearer.url | urlsplit('fragment') }}"
+        bearer: "{{ fragment.split('&')[0].split('=')[1] }}"
+      set_fact:
+        bearer: bearer
+
+    - name: oc operations
+      block:
+        - name: get oc token id
+          uri:
+            url: "{{ ose_uri }}/api/v1/namespaces/management-infra/serviceaccounts/management-admin"
+            method: GET
+            body_format: json
+            validate_certs: no
+            headers:
+              Authorization: "Bearer {{ bearer }}"
+          register: rest_tokenid
+
+        - name: get oc token for token id
+          vars:
+            tokenid: "{{ rest_tokenid.json.secrets[0].name  }}"
+          uri:
+            url: "{{ ose_uri }}/api/v1/namespaces/management-infra/secrets/{{ tokenid }}"
+            method: GET
+            body_format: json
+            validate_certs: no
+            headers:
+              Authorization: "Bearer {{ bearer }}"
+          register: rest_result
+
+        - debug:
+            msg: "{{ rest_result  }}"
 
       tags: new
+
+
+
+
+#      - name: Create Openshift  provider in ManageIQ 
+#        manageiq_provider:
+#          name: 'Openshift_Provider'
+#          type: 'OpenShift'
+#          provider:
+#            auth_key: 'topSecret'
+#            hostname: 'ose.example.com'
+#            port: 8443
+#            verify_ssl: False
+#          metrics:
+#            role: 'hawkular'
+#            hostname: 'example.com'
+#            port: 443
+#            verify_ssl: False
+#          manageiq_connection:
+#            url: 'http://127.0.0.1:3000'
+#            username: 'admin'
+#            password: 'smartvm'
+#            verify_ssl: False
+#
+#      tags: new
 
 
 
