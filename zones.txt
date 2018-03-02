@@ -1,0 +1,6 @@
+DB_Zone
+UI_Zone
+OpenStack_Zone
+RHV_Zone
+vCenter_Zone
+Other_Providers_Zone

@@ -1,0 +1,78 @@
+# Ansible playbook that uses appliance_console_cli, plus existing
+# Ansible modules, to provision a freshly deployed CloudForms appliance.
+#
+
+# this play performs initial sysadmin for newly created CFME appliances
+# we set a non-default root password, install a public key for ansible,
+# subscribe to the Red Hat customer portal, and update packages.
+
+
+- hosts: cfui
+  vars:
+    ansible_ssh_pass: "{{ cfme_new_root_pw }}"
+
+  tasks:
+
+    - name: configure zones
+      block:
+      - name: add server to zone 
+        shell: >
+          /var/www/miq/vmdb/tools/change_server_zone.rb
+          {{ item.key }} 
+          {{ item.value }} 
+        with_dict: "{{ cf_servers_zones }}"
+
+- hosts: all
+  vars:
+    ansible_ssh_pass: "{{ cfme_new_root_pw }}"
+
+  tasks:
+
+    - name: Set cf ap roles
+      block:
+      
+      - name : rails runner
+        shell: >
+          rails r 'puts MiqServer.my_server.set_config(:server => {:role => "
+          {{ cf_servers_roles[ansible_hostname] }}
+          "})'
+        args:
+          chdir: /var/www/miq/vmdb
+
+      - debug:
+          msg: "{{ansible_hostname}} {{ cf_servers_roles[ansible_hostname] }}"
+
+      - name: restart evmserverd
+        service:
+          name: evmserverd
+          state: restarted
+
+      - name: Create Openshift  provider in ManageIQ 
+        manageiq_provider:
+          name: 'Openshift_Provider'
+          type: 'OpenShift'
+          provider:
+            auth_key: 'topSecret'
+            hostname: 'ose.example.com'
+            port: 8443
+            verify_ssl: False
+          metrics:
+            role: 'hawkular'
+            hostname: 'example.com'
+            port: 443
+            verify_ssl: False
+          manageiq_connection:
+            url: 'http://127.0.0.1:3000'
+            username: 'admin'
+            password: 'smartvm'
+            verify_ssl: False
+
+ 
+
+
+      tags: new
+
+
+
+
+

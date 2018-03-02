@@ -34,3 +34,23 @@ ipa_realm: EXAMPLE.COM
 ipa_domain: example.com
 
 cfui_uri: https://cfui-dc68.rhpds.opentlc.com/
+
+cf_servers_zones:
+  1000000000001: DB_Zone 
+  1000000000002: vCenter_Zone
+  1000000000003: RHV_Zone
+  1000000000004: UI_Zone
+  1000000000005: Other_Providers_Zone
+  1000000000006: OpenStack_Zone
+  1000000000007: OpenStack_Zone
+
+cf_servers_roles:
+  cf: database_operations
+  cfui: automate,event,notifier,reporting,scheduler,user_interface,web_services,websocket
+  cfwork1: automate,ems_metrics_coordinator,ems_metrics_collector,ems_metrics_processor,event,ems_inventory,ems_operations,smartproxy,smartstate
+  cfwork2: automate,ems_metrics_coordinator,ems_metrics_collector,ems_metrics_processor,event,ems_inventory,ems_operations,smartproxy,smartstate
+  cfwork3: automate,ems_metrics_coordinator,ems_metrics_collector,ems_metrics_processor,event,ems_inventory,ems_operations,smartproxy,smartstate
+  cfwork4: automate,ems_metrics_coordinator,ems_metrics_collector,ems_metrics_processor,event,ems_inventory,ems_operations,smartproxy,smartstate
+  cfwork5: automate,ems_metrics_coordinator,ems_metrics_collector,ems_metrics_processor,event,ems_inventory,ems_operations,smartproxy,smartstate
+
+

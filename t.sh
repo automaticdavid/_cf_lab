@@ -7,10 +7,13 @@ subscription-manager repos --enable rhel-7-server-extras-rpms
 subscription-manager repos --enable rhel-7-server-optional-rpms
 subscription-manager repos --enable rhel-7-server-optional-rpms
 subscription-manager repos --enable rhel-server-rhscl-7-rpms
+subscription-manager repos --enable="rhel-7-server-ose-3.1-rpms"
 yum -y update
 yum -y install python27-python-pip
 yum -y install ansible 
-yum install git
+yum -y install git
+yum -y install atomic-openshift-clients
+
 git clone https://github.com/adamgoossens/cf-ansible.git cloudforms
  
 ansible-galaxy install -r requirements.yml
