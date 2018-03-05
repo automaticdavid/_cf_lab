@@ -105,32 +105,27 @@
         - debug:
             msg: "{{ rest_result  }}"
 
-      tags: new
 
+ - name: Create Openshift  provider in ManageIQ
+        manageiq_provider:
+          name: 'Openshift_Provider'
+          type: 'Openshift'
+          provider:
+            auth_key: "{{ rest_result.json.data.token  }}"
+            hostname: 'ose.example.com'
+            port: 8443
+            verify_ssl: False
+          metrics:
+            role: 'hawkular'
+            hostname: 'ose.example.com'
+            port: 443
+            verify_ssl: False
+          manageiq_connection:
+            url: 'http://cfui.example.com:3000'
+            username: 'admin'
+            password: "{{ cfme_new_root_pw  }}"
+            verify_ssl: False
 
-
-
-#      - name: Create Openshift  provider in ManageIQ 
-#        manageiq_provider:
-#          name: 'Openshift_Provider'
-#          type: 'OpenShift'
-#          provider:
-#            auth_key: 'topSecret'
-#            hostname: 'ose.example.com'
-#            port: 8443
-#            verify_ssl: False
-#          metrics:
-#            role: 'hawkular'
-#            hostname: 'example.com'
-#            port: 443
-#            verify_ssl: False
-#          manageiq_connection:
-#            url: 'http://127.0.0.1:3000'
-#            username: 'admin'
-#            password: 'smartvm'
-#            verify_ssl: False
-#
-#      tags: new
 
 
 
