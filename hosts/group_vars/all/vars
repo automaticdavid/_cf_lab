@@ -12,9 +12,9 @@ rhsm_repos:
   - name: rhel-7-server-rpms 
     state: present
   - name: cf-me-for-rhel-7-beta-rpms 
-    state: present
+    state: absent
   - name: cf-me-5.9-for-rhel-7-rpms
-    state: absent 
+    state: present
   - name: rhel-7-server-optional-rpms
     state: present  
   - name: rhel-7-server-supplementary-rpms
@@ -33,7 +33,7 @@ ipa_server: idm.example.com
 ipa_realm: EXAMPLE.COM
 ipa_domain: example.com
 
-cfui_uri: https://cfui-dc68.rhpds.opentlc.com/
+cfui_uri: https://cfui-4b9d.rhpds.opentlc.com/
 
 cf_servers_zones:
   1000000000001: DB_Zone 

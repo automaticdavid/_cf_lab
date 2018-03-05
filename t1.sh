@@ -8,6 +8,8 @@ subscription-manager repos --enable rhel-7-server-optional-rpms
 subscription-manager repos --enable rhel-7-server-optional-rpms
 subscription-manager repos --enable rhel-server-rhscl-7-rpms
 subscription-manager repos --enable="rhel-7-server-ose-3.1-rpms"
+subscription-manager repos --enable="rhel-7-server-ose-3.1-rpms"
+
 yum -y update
 yum -y install python27-python-pip
 yum -y install ansible 
@@ -24,6 +26,8 @@ hostlist="cf.example.com cfui.example.com cfwork1.example.com cfwork2.example.co
 for host in $hostlist; do ssh-copy-id -o StrictHostKeyChecking=false $host;done
 
 cp /root/VMware-vix-disklib-5.5.0-1284542.x86_64.tar.gz ./files/VMware-vix-disklib-5.5.0-1284542.x86_64.tar.gz
+
+echo "CHANGE LAB ID IN VARS"
 
 
 
