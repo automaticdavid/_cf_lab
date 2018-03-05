@@ -55,6 +55,8 @@
   tasks:
 
 
+    - name: install manageiq module
+    
 
     - name: get oc auth
       uri:
