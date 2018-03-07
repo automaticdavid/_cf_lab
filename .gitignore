@@ -2,4 +2,4 @@ vault.yml
 *.gz
 *.retry
 *.swp
-
+get-pip.py

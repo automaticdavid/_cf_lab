@@ -49,10 +49,13 @@
 
 
 - hosts: localhost
+  connection: local
   vars:
     ansible_ssh_pass: "{{ cfme_new_root_pw }}"
 
   tasks:
+  - name: oc 
+    block:
 
     - name: get oc auth
       uri:
@@ -74,59 +77,67 @@
         fragment: "{{ rest_bearer.url | urlsplit('fragment') }}"
         bearer: "{{ fragment.split('&')[0].split('=')[1] }}"
       set_fact:
-        bearer: bearer
+        bearer: "{{ bearer }}"
 
-    - name: oc operations
-      block:
-        - name: get oc token id
-          uri:
-            url: "{{ ose_uri }}/api/v1/namespaces/management-infra/serviceaccounts/management-admin"
-            method: GET
-            body_format: json
-            validate_certs: no
-            headers:
-              Authorization: "Bearer {{ bearer }}"
-          register: rest_tokenid
 
-        - name: get oc token for token id
-          vars:
-            tokenid: "{{ rest_tokenid.json.secrets[0].name  }}"
-          uri:
-            url: "{{ ose_uri }}/api/v1/namespaces/management-infra/secrets/{{ tokenid }}"
-            method: GET
-            body_format: json
-            validate_certs: no
-            headers:
-              Authorization: "Bearer {{ bearer }}"
-          register: rest_result
+    - debug: 
+        msg: "{{ bearer }}"
 
-        - debug:
-            msg: "{{ rest_result  }}"
+    - name: get oc token id
+      uri:
+        url: "{{ ose_uri }}/api/v1/namespaces/management-infra/serviceaccounts/management-admin"
+        method: GET
+        body_format: json
+        validate_certs: no
+        headers:
+          Authorization: "Bearer {{ bearer }}"
+      register: rest_tokenid
 
+    - name: get oc token for token id
+      vars:
+        tokenid: "{{ rest_tokenid.json.secrets[0].name  }}"
+      uri:
+        url: "{{ ose_uri }}/api/v1/namespaces/management-infra/secrets/{{ tokenid }}"
+        method: GET
+        body_format: json
+        validate_certs: no
+        headers:
+          Authorization: "Bearer {{ bearer }}"
+      register: rest_result
+
+    - debug:
+        msg: "{{ rest_result  }}"
+
+    - name: set fact for oc tokenid
+      vars:
+        token: "{{ rest_result.json.data.token }}"
+      set_fact:
+        token: "{{ token }}"
+
+    - debug:
+        msg: "{{ token  }}"
 
     - name: install miq module
       pip:
         name: git+https://github.com/ManageIQ/manageiq-api-client-python.git
 
-    - name: Create Openshift  provider in ManageIQ
+    - name: Create Openshift provider in ManageIQ
       manageiq_provider:
         name: 'Openshift_Provider'
         type: 'Openshift'
         provider:
-          auth_key: "{{ rest_result.json.data.token  }}"
+          auth_key: "{{ token  }}"
           hostname: 'ose.example.com'
           port: 8443
           verify_ssl: False
-        metrics:
-          role: 'hawkular'
-          hostname: 'ose.example.com'
-          port: 443
-          verify_ssl: False
         manageiq_connection:
-          url: 'http://cfui.example.com:3000'
+          url: 'https://cfui.example.com/'
           username: 'admin'
-          password: "{{ cfme_new_root_pw  }}"
+          password: 'r3dh4t1!'
           verify_ssl: False
+
+    tags: oc
+
 
 
 
